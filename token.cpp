@@ -9,7 +9,7 @@ private:
     std::string str_literal;
     double num_literal;
     int line;
-
+public:
     Token(TokenType t, std::string lex, std::string str, double num, int l) : type{ t },
                                                                               lexeme{ std::move(lex) },
                                                                               str_literal{ std::move(str) },
