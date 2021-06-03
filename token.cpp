@@ -1,26 +1,35 @@
-#include <string>
-#include <iostream>
-#include "tokentype.cpp"
+#include <cmath>
 
-class Token {
-private:
-    TokenType type;
-    std::string lexeme;
-    std::string str_literal;
-    double num_literal;
-    int line;
-public:
-    Token(TokenType t, std::string lex, std::string str, double num, int l) : type{ t },
-                                                                              lexeme{ std::move(lex) },
-                                                                              str_literal{ std::move(str) },
-                                                                              num_literal{ num },
-                                                                              line{ l }
-    {
-    }
+#include "token.h"
 
-    friend std::ostream& operator<<(std::ostream& out, const Token& token);
-};
+Token::Token(TokenType t, std::string lex, std::string str, double num, int l)
+        : type{ t },
+          lexeme{ std::move(lex) },
+          str_literal{ std::move(str) },
+          num_literal{ num },
+          line{ l } {}
+
+TokenType Token::getType() const {
+    return this->type;
+}
+
+std::string Token::getLexeme() const {
+    return this->lexeme;
+}
+
+std::string Token::getStrLiteral() const {
+    return this->str_literal;
+}
+
+double Token::getNumLiteral() const {
+    return this->num_literal;
+}
+
+int Token::getLine() const {
+    return this->line;
+}
 
 std::ostream& operator<<(std::ostream& out, const Token& token) {
-    return out << token.type << " " << token.lexeme << " " << token.str_literal << token.num_literal << token.line << "\n";
+    return out << token.line << "; " << token.type << "; " << token.lexeme << "; " << token.str_literal << "; "
+               << token.num_literal << "\n";
 }
