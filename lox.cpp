@@ -6,6 +6,7 @@ bool hadError = false;
 
 void report(int line, const std::string& where, const std::string& message) {
     std::cout << "[Line " << line << "] Error " << where << ": " << message << "\n";
+    hadError = true;
 }
 
 void error(int line, const std::string& message) {
