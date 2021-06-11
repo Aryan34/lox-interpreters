@@ -28,7 +28,7 @@ public:
     virtual std::string accept(Visitor& visitor) = 0;
 };
 
-class Binary : Expr {
+class Binary : public Expr {
 public:
     std::unique_ptr<Expr> left;
     Token* oper;
@@ -43,7 +43,7 @@ public:
     }
 };
 
-class Grouping : Expr {
+class Grouping : public Expr {
 public:
     std::unique_ptr<Expr> expression;
 
@@ -54,7 +54,7 @@ public:
     }
 };
 
-class StrLiteral : Expr {
+class StrLiteral : public Expr {
 public:
     std::string value;
 
@@ -65,7 +65,7 @@ public:
     }
 };
 
-class NumLiteral : Expr {
+class NumLiteral : public Expr {
 public:
     double value;
 
@@ -76,7 +76,7 @@ public:
     }
 };
 
-class Unary : Expr {
+class Unary : public Expr {
 public:
     Token* oper;
     std::unique_ptr<Expr> right;
