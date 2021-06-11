@@ -1,21 +1,19 @@
 #ifndef LOX_INTERPRETERS_AST_PRINTER_H
 #define LOX_INTERPRETERS_AST_PRINTER_H
 
-#include <cmath>
-#include <vector>
-
 #include "expr.h"
 
 class AstPrinter : Visitor {
-    std::string print(Expr expr);
+public:
+    std::string print(std::unique_ptr<Expr> expr);
 
-    std::string visitBinaryExpr(Binary expr);
-    std::string visitGroupingExpr(Grouping expr);
-    std::string visitStrLiteralExpr(StrLiteral expr);
-    std::string visitNumLiteralExpr(NumLiteral expr);
-    std::string visitUnaryExpr(Unary expr);
+    std::string visitBinaryExpr(Binary& expr) override;
+    std::string visitGroupingExpr(Grouping& expr) override;
+    std::string visitStrLiteralExpr(StrLiteral& expr) override;
+    std::string visitNumLiteralExpr(NumLiteral& expr) override;
+    std::string visitUnaryExpr(Unary& expr) override;
 
-    std::string parenthesize(std::string name, std::vector<Expr> exprs);
+    std::string parenthesize(const std::string& name, std::initializer_list<Expr*> exprs);
 };
 
 #endif //LOX_INTERPRETERS_AST_PRINTER_H
