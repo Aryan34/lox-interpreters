@@ -7,22 +7,15 @@
 
 class Token {
 public:
-    Token(TokenType t, std::string lex, std::string str, double num, int l);
-
-    TokenType getType() const;
-    std::string getLexeme() const;
-    std::string getStrLiteral() const;
-    double getNumLiteral() const;
-    int getLine() const;
-
-    friend std::ostream& operator<<(std::ostream& out, const Token& token);
-
-private:
     TokenType type;
     std::string lexeme;
     std::string str_literal;
     double num_literal;
     int line;
+
+    Token(TokenType t, std::string lex, std::string str, double num, int l);
+
+    friend std::ostream& operator<<(std::ostream& out, const Token& token);
 };
 
 #endif //LOX_INTERPRETERS_TOKEN_H
