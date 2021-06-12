@@ -29,7 +29,7 @@ private:
     Token advance();
     Token peek();
     Token previous();
-    Token consume(TokenType type, std::string message);
+    Token consume(TokenType type, const std::string& message);
 };
 
 #endif //LOX_INTERPRETERS_PARSER_H
