@@ -1,7 +1,15 @@
 #include <algorithm>
 
 #include "parser.h"
-#include "lox.cpp"
+
+std::unique_ptr<Expr> Parser::parse() {
+    try {
+        std::unique_ptr<Expr> ans = expression();
+        return ans;
+    } catch (const std::runtime_error& error) {
+        return nullptr;
+    }
+}
 
 std::unique_ptr<Expr> Parser::expression() {
     return equality();
@@ -81,8 +89,8 @@ std::unique_ptr<Expr> Parser::primary() {
         return std::make_unique<Grouping>(std::move(expr));
     }
 
-    error(peek(), "Unrecognized primary expression");
-    throw "Parse Error";
+//    error(peek(), "Expect expression.");
+    throw std::runtime_error("Expect expression.");
 }
 
 bool Parser::match(std::initializer_list<TokenType> types) {
@@ -114,6 +122,26 @@ Token Parser::previous() {
 
 Token Parser::consume(TokenType type, const std::string& message) {
     if (check(type)) return advance();
-    error(peek(), message);
-    throw "Parse Error";
+//    error(peek(), message);
+    throw std::runtime_error(message);
+}
+
+void Parser::synchronize() {
+    advance();
+
+    while (!isAtEnd()) {
+        if (previous().type == TokenType::SEMICOLON) { return; }
+
+        switch (peek().type) {
+            case TokenType::CLASS:
+            case TokenType::FUN:
+            case TokenType::VAR:
+            case TokenType::FOR:
+            case TokenType::IF:
+            case TokenType::WHILE:
+            case TokenType::PRINT:
+            case TokenType::RETURN:return;
+            default:advance();
+        }
+    }
 }

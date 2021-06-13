@@ -10,6 +10,8 @@ class Parser {
 public:
     explicit Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {}
 
+    std::unique_ptr<Expr> parse();
+
 private:
     const std::vector<Token> tokens;
     int current = 0;
@@ -30,6 +32,8 @@ private:
     Token peek();
     Token previous();
     Token consume(TokenType type, const std::string& message);
+
+    void synchronize();
 };
 
 #endif //LOX_INTERPRETERS_PARSER_H

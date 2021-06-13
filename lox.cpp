@@ -1,6 +1,8 @@
 #include <fstream>
 
 #include "scanner.h"
+#include "parser.h"
+#include "ast_printer.h"
 
 bool hadError = false;
 
@@ -9,17 +11,28 @@ void report(int line, const std::string& where, const std::string& message) {
     hadError = true;
 }
 
+void error(const Token& token, const std::string& message) {
+    if (token.type == TokenType::END_FILE) {
+        report(token.line, " at end", message);
+    } else {
+        report(token.line, " at '" + token.lexeme + "'", message);
+    }
+}
+
 void error(int line, const std::string& message) {
     report(line, "", message);
 }
 
 void run(std::string source) {
+    // TODO: call std::move on source argument directly in scanner header
     Scanner scanner { std::move(source) };
     std::vector<Token> tokens = scanner.scanTokens();
+    Parser parser {tokens};
+    std::unique_ptr<Expr> expression = parser.parse();
 
-    for (const Token& token : tokens) {
-        std::cout << token;
-    }
+    if (hadError) { return; }
+    AstPrinter printer{};
+    std::cout << printer.print(std::move(expression));
 }
 
 void runFile(const std::string& path) {
@@ -48,4 +61,5 @@ int main(int argc, char** argv) {
     } else {
         runPrompt();
     }
+    return 0;
 }
