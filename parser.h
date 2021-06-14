@@ -28,10 +28,10 @@ private:
     bool check(TokenType type);
     bool isAtEnd();
 
-    Token* advance();
-    Token* peek();
-    Token* previous();
-    Token* consume(TokenType type, const std::string& message);
+    Token& advance();
+    Token& peek();
+    Token& previous();
+    Token& consume(TokenType type, const std::string& message);
 
     void synchronize();
 };

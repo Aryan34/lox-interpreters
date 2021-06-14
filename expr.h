@@ -31,10 +31,10 @@ public:
 class Binary : public Expr {
 public:
     std::unique_ptr<Expr> left;
-    Token* oper;
+    Token& oper;
     std::unique_ptr<Expr> right;
 
-    Binary(std::unique_ptr<Expr> left, Token* oper, std::unique_ptr<Expr> right) : left(std::move(left)),
+    Binary(std::unique_ptr<Expr> left, Token& oper, std::unique_ptr<Expr> right) : left(std::move(left)),
                                                                                    oper(oper),
                                                                                    right(std::move(right)) {}
 
@@ -78,10 +78,10 @@ public:
 
 class Unary : public Expr {
 public:
-    Token* oper;
+    Token& oper;
     std::unique_ptr<Expr> right;
 
-    Unary(Token* oper, std::unique_ptr<Expr> right) : oper{ oper }, right(std::move(right)) {}
+    Unary(Token& oper, std::unique_ptr<Expr> right) : oper{ oper }, right(std::move(right)) {}
 
     std::string accept(Visitor& visitor) override {
         return visitor.visitUnaryExpr(*this);
