@@ -8,12 +8,12 @@
 
 class Parser {
 public:
-    explicit Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {}
+    explicit Parser(std::vector<std::unique_ptr<Token>> tokens) : tokens(std::move(tokens)) {}
 
     std::unique_ptr<Expr> parse();
 
 private:
-    const std::vector<Token> tokens;
+    const std::vector<std::unique_ptr<Token>> tokens;
     int current = 0;
 
     std::unique_ptr<Expr> expression();
@@ -28,10 +28,10 @@ private:
     bool check(TokenType type);
     bool isAtEnd();
 
-    Token advance();
-    Token peek();
-    Token previous();
-    Token consume(TokenType type, const std::string& message);
+    Token* advance();
+    Token* peek();
+    Token* previous();
+    Token* consume(TokenType type, const std::string& message);
 
     void synchronize();
 };

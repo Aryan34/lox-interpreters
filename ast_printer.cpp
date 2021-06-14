@@ -3,7 +3,7 @@
 #include "ast_printer.h"
 
 std::string AstPrinter::print(std::unique_ptr<Expr> expr) {
-    return expr->accept(*this);
+    return expr->accept(*this) + "\n";
 }
 
 std::string AstPrinter::visitBinaryExpr(Binary& expr) {

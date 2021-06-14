@@ -7,6 +7,7 @@ Scanner::Scanner(std::string source)
           start{ 0 },
           current{ 0 },
           source{ std::move(source) },
+          tokens{ },
           keywords{
                   { "and",    TokenType::AND },
                   { "class",  TokenType::CLASS },
@@ -52,17 +53,17 @@ char Scanner::advance() {
 
 void Scanner::addToken(TokenType type, const std::string& str_literal) {
     std::string text = source.substr(start, current - start);
-    tokens.emplace_back(type, text, str_literal, double(NAN), line);
+    tokens.push_back(std::make_unique<Token>(type, text, str_literal, double(NAN), line));
 }
 
 void Scanner::addToken(TokenType type, double num_literal) {
     std::string text = source.substr(start, current - start);
-    tokens.emplace_back(type, text, "", num_literal, line);
+    tokens.push_back(std::make_unique<Token>(type, text, "", num_literal, line));
 }
 
 void Scanner::addToken(TokenType type) {
     std::string text = source.substr(start, current - start);
-    tokens.emplace_back(type, text, "", double(NAN), line);
+    tokens.push_back(std::make_unique<Token>(type, text, "", double(NAN), line));
 }
 
 void Scanner::str() {
@@ -194,12 +195,12 @@ void Scanner::scanToken() {
     }
 }
 
-std::vector<Token> Scanner::scanTokens() {
+std::vector<std::unique_ptr<Token>>& Scanner::scanTokens() {
     while (!isAtEnd()) {
         start = current;
         scanToken();
     }
 
-    tokens.emplace_back(TokenType::END_FILE, "", "", double(NAN), line);
+    tokens.push_back(std::make_unique<Token>(TokenType::END_FILE, "", "", double(NAN), line));
     return tokens;
 }

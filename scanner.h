@@ -2,6 +2,7 @@
 #define LOX_INTERPRETERS_SCANNER_H
 
 #include <vector>
+#include <memory>
 #include <unordered_map>
 
 #include "token.h"
@@ -25,14 +26,14 @@ public:
     void identifier();
 
     void scanToken();
-    std::vector<Token> scanTokens();
+    std::vector<std::unique_ptr<Token>>& scanTokens();
 
 private:
     int line;
     int start;
     int current;
     std::string source;
-    std::vector<Token> tokens;
+    std::vector<std::unique_ptr<Token>> tokens;
     std::unordered_map<std::string, TokenType> keywords;
 };
 

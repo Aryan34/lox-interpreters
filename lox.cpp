@@ -26,8 +26,8 @@ void error(int line, const std::string& message) {
 void run(std::string source) {
     // TODO: call std::move on source argument directly in scanner header
     Scanner scanner { std::move(source) };
-    std::vector<Token> tokens = scanner.scanTokens();
-    Parser parser {tokens};
+    std::vector<std::unique_ptr<Token>>& tokens = scanner.scanTokens();
+    Parser parser{ std::move(tokens) };
     std::unique_ptr<Expr> expression = parser.parse();
 
     if (hadError) { return; }
