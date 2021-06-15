@@ -7,7 +7,7 @@ std::string AstPrinter::print(std::unique_ptr<Expr> expr) {
 }
 
 std::string AstPrinter::visitBinaryExpr(Binary& expr) {
-    return parenthesize(expr.oper->lexeme, std::initializer_list<Expr*>{ expr.left.get(), expr.right.get() });
+    return parenthesize(expr.oper.lexeme, std::initializer_list<Expr*>{ expr.left.get(), expr.right.get() });
 }
 
 std::string AstPrinter::visitGroupingExpr(Grouping& expr) {
@@ -23,7 +23,7 @@ std::string AstPrinter::visitNumLiteralExpr(NumLiteral& expr) {
 }
 
 std::string AstPrinter::visitUnaryExpr(Unary& expr) {
-    return parenthesize(expr.oper->lexeme, std::initializer_list<Expr*>{ expr.right.get() });
+    return parenthesize(expr.oper.lexeme, std::initializer_list<Expr*>{ expr.right.get() });
 }
 
 std::string AstPrinter::parenthesize(const std::string& name, std::initializer_list<Expr*> exprs) {
