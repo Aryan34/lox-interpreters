@@ -76,11 +76,11 @@ std::unique_ptr<Expr> Parser::primary() {
     if (match(std::initializer_list<TokenType>{ TokenType::NIL })) { return std::make_unique<NumLiteral>(-1); }
 
     if (match(std::initializer_list<TokenType>{ TokenType::NUMBER })) {
-        return std::make_unique<NumLiteral>(previous().num_literal);
+        return std::make_unique<NumLiteral>(std::get<double>(previous().literal));
     }
 
     if (match(std::initializer_list<TokenType>{ TokenType::STRING })) {
-        return std::make_unique<StrLiteral>(previous().str_literal);
+        return std::make_unique<StrLiteral>(std::get<std::string>(previous().literal));
     }
 
     if (match(std::initializer_list<TokenType>{ TokenType::LEFT_PAREN })) {

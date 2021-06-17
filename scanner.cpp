@@ -51,19 +51,14 @@ char Scanner::advance() {
     return source.at(current++);
 }
 
-void Scanner::addToken(TokenType type, const std::string& str_literal) {
-    std::string text = source.substr(start, current - start);
-    tokens.push_back(std::make_unique<Token>(type, text, str_literal, double(NAN), line));
-}
-
-void Scanner::addToken(TokenType type, double num_literal) {
-    std::string text = source.substr(start, current - start);
-    tokens.push_back(std::make_unique<Token>(type, text, "", num_literal, line));
-}
-
 void Scanner::addToken(TokenType type) {
     std::string text = source.substr(start, current - start);
-    tokens.push_back(std::make_unique<Token>(type, text, "", double(NAN), line));
+    tokens.push_back(std::make_unique<Token>(type, text, std::variant<std::monostate, std::string, double>{}, line));
+}
+
+void Scanner::addToken(TokenType type, const std::variant<std::monostate, std::string, double>& literal) {
+    std::string text = source.substr(start, current - start);
+    tokens.push_back(std::make_unique<Token>(type, text, literal, line));
 }
 
 void Scanner::str() {
@@ -201,6 +196,8 @@ std::vector<std::unique_ptr<Token>>& Scanner::scanTokens() {
         scanToken();
     }
 
-    tokens.push_back(std::make_unique<Token>(TokenType::END_FILE, "", "", double(NAN), line));
+    tokens.push_back(
+            std::make_unique<Token>(TokenType::END_FILE, "", std::variant<std::monostate, std::string, double>{},
+                                    line));
     return tokens;
 }

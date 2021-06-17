@@ -28,9 +28,8 @@ private:
     char peekNext();
     char advance();
 
-    void addToken(TokenType t, const std::string& str_literal);
-    void addToken(TokenType t, double num_literal);
-    void addToken(TokenType t);
+    void addToken(TokenType type);
+    void addToken(TokenType type, const std::variant<std::monostate, std::string, double>& literal);
     void str();
     void number();
     void identifier();
