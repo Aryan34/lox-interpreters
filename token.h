@@ -2,6 +2,7 @@
 #define LOX_INTERPRETERS_TOKEN_H
 
 #include <string>
+#include <variant>
 
 #include "tokentype.h"
 
@@ -9,11 +10,10 @@ class Token {
 public:
     TokenType type;
     std::string lexeme;
-    std::string str_literal;
-    double num_literal;
+    std::variant<std::monostate, std::string, double> literal;
     int line;
 
-    Token(TokenType t, std::string lex, std::string str, double num, int l);
+    Token(TokenType type, std::string lexeme, std::variant<std::monostate, std::string, double> literal, int line);
 
     friend std::ostream& operator<<(std::ostream& out, const Token& token);
 };

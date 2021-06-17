@@ -1,13 +1,14 @@
 #include "token.h"
 
-Token::Token(TokenType t, std::string lex, std::string str, double num, int l)
-        : type{ t },
-          lexeme{ std::move(lex) },
-          str_literal{ std::move(str) },
-          num_literal{ num },
-          line{ l } {}
+#include <utility>
+
+Token::Token(TokenType type, std::string lexeme, std::variant<std::monostate, std::string, double> literal, int line)
+        : type{ type },
+          lexeme{ std::move(lexeme) },
+          literal { std::move(literal) },
+          line{ line } {}
 
 std::ostream& operator<<(std::ostream& out, const Token& token) {
-    return out << token.line << "; " << token.type << "; " << token.lexeme << "; " << token.str_literal << "; "
-               << token.num_literal << "\n";
+    // TODO: print variant contents (possibly using visit)
+    return out << token.line << "; " << token.type << "; " << token.lexeme << "\n";
 }
