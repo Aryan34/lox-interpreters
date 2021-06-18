@@ -1,29 +1,34 @@
-#include <cmath>
-
 #include "ast_printer.h"
 
-std::string AstPrinter::print(std::unique_ptr<Expr> expr) {
-    // TODO: error handling for variant get
-    return std::get<std::string>(expr->accept(*this)) + "\n";
+std::string AstPrinter::toStrVisit(std::variant<std::monostate, std::string, double, bool> literal) {
+    return std::visit([](std::variant<std::monostate, std::string, double, bool> arg) {
+        if (std::holds_alternative<std::string>(arg))
+            return std::get<std::string>(arg);
+        if (std::holds_alternative<double>(arg))
+            return std::to_string(std::get<double>(arg));
+        if (std::holds_alternative<bool>(arg))
+            return std::get<bool>(arg) ? std::string("true") : std::string("false");
+        return std::string("nil");
+    }, literal);
 }
 
-std::variant<std::monostate, std::string, double> AstPrinter::visitBinaryExpr(Binary& expr) {
+std::string AstPrinter::print(std::unique_ptr<Expr> expr) {
+    return toStrVisit(expr->accept(*this)) + "\n";
+}
+
+std::variant<std::monostate, std::string, double, bool> AstPrinter::visitBinaryExpr(Binary& expr) {
     return parenthesize(expr.oper.lexeme, std::initializer_list<Expr*>{ expr.left.get(), expr.right.get() });
 }
 
-std::variant<std::monostate, std::string, double> AstPrinter::visitGroupingExpr(Grouping& expr) {
+std::variant<std::monostate, std::string, double, bool> AstPrinter::visitGroupingExpr(Grouping& expr) {
     return parenthesize("group", std::initializer_list<Expr*>{ expr.expression.get() });
 }
 
-std::variant<std::monostate, std::string, double> AstPrinter::visitStrLiteralExpr(StrLiteral& expr) {
+std::variant<std::monostate, std::string, double, bool> AstPrinter::visitLiteralExpr(Literal& expr) {
     return expr.value;
 }
 
-std::variant<std::monostate, std::string, double> AstPrinter::visitNumLiteralExpr(NumLiteral& expr) {
-    return std::to_string(expr.value);
-}
-
-std::variant<std::monostate, std::string, double> AstPrinter::visitUnaryExpr(Unary& expr) {
+std::variant<std::monostate, std::string, double, bool> AstPrinter::visitUnaryExpr(Unary& expr) {
     return parenthesize(expr.oper.lexeme, std::initializer_list<Expr*>{ expr.right.get() });
 }
 
@@ -31,7 +36,7 @@ std::string AstPrinter::parenthesize(const std::string& name, std::initializer_l
     std::string astString = "(" + name;
     for (Expr* expr: exprs) {
         // TODO: error handling for variant get
-        astString += " " + std::get<std::string>(expr->accept(*this));
+        astString += " " + toStrVisit(expr->accept(*this));
     }
     return astString + ")";
 }

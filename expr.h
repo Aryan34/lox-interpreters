@@ -2,6 +2,7 @@
 #define LOX_INTERPRETERS_EXPR_H
 
 #include <memory>
+#include <utility>
 
 #include "token.h"
 
@@ -9,23 +10,21 @@
 
 class Binary;
 class Grouping;
-class StrLiteral;
-class NumLiteral;
+class Literal;
 class Unary;
 
 class Visitor {
 public:
-    virtual std::variant<std::monostate, std::string, double> visitBinaryExpr(Binary& expr) = 0;
-    virtual std::variant<std::monostate, std::string, double> visitGroupingExpr(Grouping& expr) = 0;
-    virtual std::variant<std::monostate, std::string, double> visitStrLiteralExpr(StrLiteral& expr) = 0;
-    virtual std::variant<std::monostate, std::string, double> visitNumLiteralExpr(NumLiteral& expr) = 0;
-    virtual std::variant<std::monostate, std::string, double> visitUnaryExpr(Unary& expr) = 0;
+    virtual std::variant<std::monostate, std::string, double, bool> visitBinaryExpr(Binary& expr) = 0;
+    virtual std::variant<std::monostate, std::string, double, bool> visitGroupingExpr(Grouping& expr) = 0;
+    virtual std::variant<std::monostate, std::string, double, bool> visitLiteralExpr(Literal& expr) = 0;
+    virtual std::variant<std::monostate, std::string, double, bool> visitUnaryExpr(Unary& expr) = 0;
 };
 
 class Expr {
 public:
     virtual ~Expr() = default;
-    virtual std::variant<std::monostate, std::string, double> accept(Visitor& visitor) = 0;
+    virtual std::variant<std::monostate, std::string, double, bool> accept(Visitor& visitor) = 0;
 };
 
 class Binary : public Expr {
@@ -38,7 +37,7 @@ public:
                                                                                    oper(oper),
                                                                                    right(std::move(right)) {}
 
-    std::variant<std::monostate, std::string, double> accept(Visitor& visitor) override {
+    std::variant<std::monostate, std::string, double, bool> accept(Visitor& visitor) override {
         return visitor.visitBinaryExpr(*this);
     }
 };
@@ -49,30 +48,19 @@ public:
 
     explicit Grouping(std::unique_ptr<Expr> expression) : expression(std::move(expression)) {}
 
-    std::variant<std::monostate, std::string, double> accept(Visitor& visitor) override {
+    std::variant<std::monostate, std::string, double, bool> accept(Visitor& visitor) override {
         return visitor.visitGroupingExpr(*this);
     }
 };
 
-class StrLiteral : public Expr {
+class Literal : public Expr {
 public:
-    std::string value;
+    std::variant<std::monostate, std::string, double, bool> value;
 
-    explicit StrLiteral(std::string value) : value(std::move(value)) {}
+    explicit Literal(std::variant<std::monostate, std::string, double, bool> value) : value{ std::move(value) } {}
 
-    std::variant<std::monostate, std::string, double> accept(Visitor& visitor) override {
-        return visitor.visitStrLiteralExpr(*this);
-    }
-};
-
-class NumLiteral : public Expr {
-public:
-    double value;
-
-    explicit NumLiteral(double value) : value{ value } {}
-
-    std::variant<std::monostate, std::string, double> accept(Visitor& visitor) override {
-        return visitor.visitNumLiteralExpr(*this);
+    std::variant<std::monostate, std::string, double, bool> accept(Visitor& visitor) override {
+        return visitor.visitLiteralExpr(*this);
     }
 };
 
@@ -83,7 +71,7 @@ public:
 
     Unary(Token& oper, std::unique_ptr<Expr> right) : oper{ oper }, right(std::move(right)) {}
 
-    std::variant<std::monostate, std::string, double> accept(Visitor& visitor) override {
+    std::variant<std::monostate, std::string, double, bool> accept(Visitor& visitor) override {
         return visitor.visitUnaryExpr(*this);
     }
 };

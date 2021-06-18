@@ -70,20 +70,19 @@ std::unique_ptr<Expr> Parser::unary() {
 }
 
 std::unique_ptr<Expr> Parser::primary() {
-    // TODO: Create new Literal classes for booleans and null (or find a better way to deal with them)
-    if (match(std::initializer_list<TokenType>{ TokenType::FALSE })) { return std::make_unique<NumLiteral>(0); }
-    if (match(std::initializer_list<TokenType>{ TokenType::TRUE })) { return std::make_unique<NumLiteral>(1); }
-    if (match(std::initializer_list<TokenType>{ TokenType::NIL })) { return std::make_unique<NumLiteral>(-1); }
-
-    if (match(std::initializer_list<TokenType>{ TokenType::NUMBER })) {
-        return std::make_unique<NumLiteral>(std::get<double>(previous().literal));
+    if (match(std::initializer_list<TokenType>{ TokenType::TRUE })) {
+        return std::make_unique<Literal>(std::variant<std::monostate, std::string, double, bool>{ true });
     }
-
-    if (match(std::initializer_list<TokenType>{ TokenType::STRING })) {
-        return std::make_unique<StrLiteral>(std::get<std::string>(previous().literal));
+    else if (match(std::initializer_list<TokenType>{ TokenType::FALSE })) {
+        return std::make_unique<Literal>(std::variant<std::monostate, std::string, double, bool>{ false });
     }
-
-    if (match(std::initializer_list<TokenType>{ TokenType::LEFT_PAREN })) {
+    else if (match(std::initializer_list<TokenType>{ TokenType::NIL })) {
+        return std::make_unique<Literal>(std::variant<std::monostate, std::string, double, bool>{});
+    }
+    else if (match(std::initializer_list<TokenType>{ TokenType::NUMBER , TokenType::STRING })) {
+        return std::make_unique<Literal>(previous().literal);
+    }
+    else if (match(std::initializer_list<TokenType>{ TokenType::LEFT_PAREN })) {
         std::unique_ptr<Expr> expr = expression();
         consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
         return std::make_unique<Grouping>(std::move(expr));
