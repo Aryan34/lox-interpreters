@@ -2,6 +2,7 @@
 
 #include "scanner.h"
 #include "parser.h"
+#include "interpreter.h"
 #include "ast_printer.h"
 
 bool hadError = false;
@@ -31,8 +32,10 @@ void run(std::string source) {
     std::unique_ptr<Expr> expression = parser.parse();
 
     if (hadError) { return; }
-    AstPrinter printer{};
-    std::cout << printer.print(std::move(expression));
+    Interpreter interpreter{};
+    interpreter.interpret(std::move(expression));
+//    AstPrinter printer{};
+//    std::cout << printer.print(std::move(expression));
 }
 
 void runFile(const std::string& path) {
