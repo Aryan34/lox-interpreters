@@ -10,10 +10,10 @@ class Token {
 public:
     TokenType type;
     std::string lexeme;
-    std::variant<std::monostate, std::string, double> literal;
+    std::variant<std::monostate, std::string, double, bool> literal;
     int line;
 
-    Token(TokenType type, std::string lexeme, std::variant<std::monostate, std::string, double> literal, int line);
+    Token(TokenType type, std::string lexeme, std::variant<std::monostate, std::string, double, bool> literal, int line);
 
     friend std::ostream& operator<<(std::ostream& out, const Token& token);
 };
