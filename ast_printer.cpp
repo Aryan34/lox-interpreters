@@ -1,7 +1,7 @@
 #include "ast_printer.h"
 
-std::string AstPrinter::toStrVisit(std::variant<std::monostate, std::string, double, bool> literal) {
-    return std::visit([](std::variant<std::monostate, std::string, double, bool> arg) {
+std::string AstPrinter::toStrVisit(LiteralVariant literal) {
+    return std::visit([](LiteralVariant arg) {
         if (std::holds_alternative<std::string>(arg))
             return std::get<std::string>(arg);
         if (std::holds_alternative<double>(arg))
@@ -16,19 +16,19 @@ std::string AstPrinter::print(std::unique_ptr<Expr> expr) {
     return toStrVisit(expr->accept(*this)) + "\n";
 }
 
-std::variant<std::monostate, std::string, double, bool> AstPrinter::visitBinaryExpr(Binary& expr) {
+LiteralVariant AstPrinter::visitBinaryExpr(Binary& expr) {
     return parenthesize(expr.oper.lexeme, std::initializer_list<Expr*>{ expr.left.get(), expr.right.get() });
 }
 
-std::variant<std::monostate, std::string, double, bool> AstPrinter::visitGroupingExpr(Grouping& expr) {
+LiteralVariant AstPrinter::visitGroupingExpr(Grouping& expr) {
     return parenthesize("group", std::initializer_list<Expr*>{ expr.expression.get() });
 }
 
-std::variant<std::monostate, std::string, double, bool> AstPrinter::visitLiteralExpr(Literal& expr) {
+LiteralVariant AstPrinter::visitLiteralExpr(Literal& expr) {
     return expr.value;
 }
 
-std::variant<std::monostate, std::string, double, bool> AstPrinter::visitUnaryExpr(Unary& expr) {
+LiteralVariant AstPrinter::visitUnaryExpr(Unary& expr) {
     return parenthesize(expr.oper.lexeme, std::initializer_list<Expr*>{ expr.right.get() });
 }
 

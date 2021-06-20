@@ -8,11 +8,11 @@ public:
     void interpret(std::unique_ptr<Expr> expr);
 
 private:
-    static std::string stringify(std::variant<std::monostate, std::string, double, bool> object);
-    std::variant<std::monostate, std::string, double, bool> visitBinaryExpr(Binary& expr) override;
-    std::variant<std::monostate, std::string, double, bool> visitGroupingExpr(Grouping& expr) override;
-    std::variant<std::monostate, std::string, double, bool> visitLiteralExpr(Literal& expr) override;
-    std::variant<std::monostate, std::string, double, bool> visitUnaryExpr(Unary& expr) override;
+    static std::string stringify(LiteralVariant object);
+    LiteralVariant visitBinaryExpr(Binary& expr) override;
+    LiteralVariant visitGroupingExpr(Grouping& expr) override;
+    LiteralVariant visitLiteralExpr(Literal& expr) override;
+    LiteralVariant visitUnaryExpr(Unary& expr) override;
 };
 
 #endif //LOX_INTERPRETERS_INTERPRETER_H

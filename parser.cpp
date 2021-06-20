@@ -71,13 +71,13 @@ std::unique_ptr<Expr> Parser::unary() {
 
 std::unique_ptr<Expr> Parser::primary() {
     if (match(std::initializer_list<TokenType>{ TokenType::TRUE })) {
-        return std::make_unique<Literal>(std::variant<std::monostate, std::string, double, bool>{ true });
+        return std::make_unique<Literal>(LiteralVariant{ true });
     }
     else if (match(std::initializer_list<TokenType>{ TokenType::FALSE })) {
-        return std::make_unique<Literal>(std::variant<std::monostate, std::string, double, bool>{ false });
+        return std::make_unique<Literal>(LiteralVariant{ false });
     }
     else if (match(std::initializer_list<TokenType>{ TokenType::NIL })) {
-        return std::make_unique<Literal>(std::variant<std::monostate, std::string, double, bool>{});
+        return std::make_unique<Literal>(LiteralVariant{});
     }
     else if (match(std::initializer_list<TokenType>{ TokenType::NUMBER , TokenType::STRING })) {
         return std::make_unique<Literal>(previous().literal);

@@ -54,10 +54,10 @@ char Scanner::advance() {
 void Scanner::addToken(TokenType type) {
     std::string text = source.substr(start, current - start);
     tokens.push_back(
-            std::make_unique<Token>(type, text, std::variant<std::monostate, std::string, double, bool>{}, line));
+            std::make_unique<Token>(type, text, LiteralVariant{}, line));
 }
 
-void Scanner::addToken(TokenType type, const std::variant<std::monostate, std::string, double, bool>& literal) {
+void Scanner::addToken(TokenType type, const LiteralVariant& literal) {
     std::string text = source.substr(start, current - start);
     tokens.push_back(std::make_unique<Token>(type, text, literal, line));
 }
@@ -77,7 +77,7 @@ void Scanner::str() {
 
     advance();
     std::string value = source.substr(start + 1, current - start - 2);
-    addToken(TokenType::STRING, std::variant<std::monostate, std::string, double, bool>{value});
+    addToken(TokenType::STRING, LiteralVariant{value});
 }
 
 void Scanner::number() {
@@ -93,7 +93,7 @@ void Scanner::number() {
     }
 
     double value = stod(source.substr(start, current - start));
-    addToken(TokenType::NUMBER, std::variant<std::monostate, std::string, double, bool>{value});
+    addToken(TokenType::NUMBER, LiteralVariant{value});
 }
 
 void Scanner::identifier() {
@@ -103,11 +103,11 @@ void Scanner::identifier() {
 
     std::string text = source.substr(start, current - start);
     if (text == "true") {
-        addToken(TokenType::TRUE, std::variant<std::monostate, std::string, double, bool>{true});
+        addToken(TokenType::TRUE, LiteralVariant{true});
     } else if (text == "false") {
-        addToken(TokenType::FALSE, std::variant<std::monostate, std::string, double, bool>{false});
+        addToken(TokenType::FALSE, LiteralVariant{false});
     } else if (text == "nil") {
-        addToken(TokenType::NIL, std::variant<std::monostate, std::string, double, bool>{});
+        addToken(TokenType::NIL, LiteralVariant{});
     } else {
         addToken(keywords.find(text) != keywords.end() ? keywords[text] : TokenType::IDENTIFIER);
     }
@@ -207,7 +207,7 @@ std::vector<std::unique_ptr<Token>>& Scanner::scanTokens() {
     }
 
     tokens.push_back(
-            std::make_unique<Token>(TokenType::END_FILE, "", std::variant<std::monostate, std::string, double, bool>{},
+            std::make_unique<Token>(TokenType::END_FILE, "", LiteralVariant{},
                                     line));
     return tokens;
 }
