@@ -3,7 +3,7 @@
 #include "scanner.h"
 #include "parser.h"
 #include "interpreter.h"
-#include "ast_printer.h"
+#include "cpplox/ast_printer.h"
 
 bool hadError = false;
 

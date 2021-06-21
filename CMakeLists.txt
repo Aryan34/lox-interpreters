@@ -6,17 +6,17 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(.)
 
 add_executable(lox_interpreters
-        lox.cpp
-        scanner.cpp
-        scanner.h
-        token.cpp
-        token.h
-        tokentype.cpp
-        tokentype.h
-        expr.h
-        ast_printer.cpp
-        ast_printer.h
-        parser.cpp
-        parser.h
-        interpreter.cpp
-        interpreter.h)
+        cpplox/lox.cpp
+        cpplox/scanner.cpp
+        cpplox/scanner.h
+        cpplox/token.cpp
+        cpplox/token.h
+        cpplox/tokentype.cpp
+        cpplox/tokentype.h
+        cpplox/expr.h
+        cpplox/ast_printer.cpp
+        cpplox/ast_printer.h
+        cpplox/parser.cpp
+        cpplox/parser.h
+        cpplox/interpreter.cpp
+        cpplox/interpreter.h)
