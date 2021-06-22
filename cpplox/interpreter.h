@@ -10,8 +10,8 @@ public:
 private:
     static std::string stringify(LiteralVariant literal);
 
-    bool isTruthy(LiteralVariant literal);
-    bool isEqual(LiteralVariant a, LiteralVariant b);
+    static bool isTruthy(LiteralVariant literal);
+    static bool isEqual(LiteralVariant a, LiteralVariant b);
 
     LiteralVariant visitBinaryExpr(Binary& expr) override;
     LiteralVariant visitGroupingExpr(Grouping& expr) override;

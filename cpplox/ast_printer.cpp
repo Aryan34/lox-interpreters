@@ -1,19 +1,26 @@
 #include "ast_printer.h"
 
-std::string AstPrinter::toStrVisit(LiteralVariant literal) {
-    return std::visit([](LiteralVariant arg) {
-        if (std::holds_alternative<std::string>(arg))
-            return std::get<std::string>(arg);
-        if (std::holds_alternative<double>(arg))
-            return std::to_string(std::get<double>(arg));
-        if (std::holds_alternative<bool>(arg))
-            return std::get<bool>(arg) ? std::string("true") : std::string("false");
-        return std::string("nil");
-    }, literal);
-}
-
 std::string AstPrinter::print(std::unique_ptr<Expr> expr) {
     return toStrVisit(expr->accept(*this)) + "\n";
+}
+
+std::string AstPrinter::toStrVisit(LiteralVariant literal) {
+    switch (literal.index()) {
+        case 0: return "nil";  // literal is type nil
+        case 1: return std::get<std::string>(literal);  // literal is type string
+        case 2: return std::to_string(std::get<double>(literal));  // literal is type number
+        case 3: return std::get<bool>(literal) ? std::string("true") : std::string("false");  // literal is type bool
+        default: return "variant type index error";
+    }
+}
+
+std::string AstPrinter::parenthesize(const std::string& name, std::initializer_list<Expr*> exprs) {
+    std::string astString = "(" + name;
+    for (Expr* expr: exprs) {
+        // TODO: error handling for variant get
+        astString += " " + toStrVisit(expr->accept(*this));
+    }
+    return astString + ")";
 }
 
 LiteralVariant AstPrinter::visitBinaryExpr(Binary& expr) {
@@ -31,26 +38,3 @@ LiteralVariant AstPrinter::visitLiteralExpr(Literal& expr) {
 LiteralVariant AstPrinter::visitUnaryExpr(Unary& expr) {
     return parenthesize(expr.oper.lexeme, std::initializer_list<Expr*>{ expr.right.get() });
 }
-
-std::string AstPrinter::parenthesize(const std::string& name, std::initializer_list<Expr*> exprs) {
-    std::string astString = "(" + name;
-    for (Expr* expr: exprs) {
-        // TODO: error handling for variant get
-        astString += " " + toStrVisit(expr->accept(*this));
-    }
-    return astString + ")";
-}
-
-//int main() {
-//    std::unique_ptr<Expr> literal1 = std::make_unique<NumLiteral>(42.67);
-//    std::unique_ptr<Expr> grouping = std::make_unique<Grouping>(std::move(literal1));
-//    std::unique_ptr<Expr> literal2 = std::make_unique<NumLiteral>(123);
-//    std::unique_ptr<Expr> unary = std::make_unique<Unary>(new Token(TokenType::MINUS, "-", "", NAN, 1),
-//                                                          std::move(literal2));
-//    std::unique_ptr<Expr> expression = std::make_unique<Binary>(std::move(unary),
-//                                                                new Token(TokenType::STAR, "*", "", NAN, 1),
-//                                                                std::move(grouping));
-//
-//    AstPrinter printer{};
-//    std::cout << printer.print(std::move(expression));
-//}
