@@ -1,11 +1,11 @@
 #include "interpreter.h"
+#include "runtime_error.h"
 
-// TODO: implement rigorous runtime error handling
 void Interpreter::interpret(std::unique_ptr<Expr> expr) {
     try {
         std::cout << stringify(expr->accept(*this)) << "\n";
-    } catch (...) {
-        std::cout << "error in interpreter";
+    } catch (RuntimeError& error) {
+        std::cout << "Interpreter Error: " << error.what() << "\n";
     }
 }
 
@@ -39,6 +39,16 @@ bool Interpreter::isEqual(LiteralVariant a, LiteralVariant b) {
     }
 }
 
+void Interpreter::checkNumberOperand(Token& oper, const LiteralVariant& operand) {
+    if (operand.index() == 2) { return; }
+    throw RuntimeError(oper, "Operand must be a number.");
+}
+
+void Interpreter::checkNumberOperands(Token& oper, const LiteralVariant& left, const LiteralVariant& right) {
+    if (left.index() == 2 && right.index() == 2) { return; }
+    throw RuntimeError(oper, "Operands must be numbers.");
+}
+
 LiteralVariant Interpreter::visitBinaryExpr(Binary& expr) {
     LiteralVariant left = expr.left->accept(*this);
     LiteralVariant right = expr.right->accept(*this);
@@ -49,14 +59,19 @@ LiteralVariant Interpreter::visitBinaryExpr(Binary& expr) {
         case TokenType::EQUAL_EQUAL:
             return LiteralVariant{ isEqual(left, right) };
         case TokenType::GREATER:
+            checkNumberOperands(expr.oper, left, right);
             return LiteralVariant{ std::get<double>(left) > std::get<double>(right) };
         case TokenType::GREATER_EQUAL:
+            checkNumberOperands(expr.oper, left, right);
             return LiteralVariant{ std::get<double>(left) >= std::get<double>(right) };
         case TokenType::LESS:
+            checkNumberOperands(expr.oper, left, right);
             return LiteralVariant{ std::get<double>(left) < std::get<double>(right) };
         case TokenType::LESS_EQUAL:
+            checkNumberOperands(expr.oper, left, right);
             return LiteralVariant{ std::get<double>(left) <= std::get<double>(right) };
         case TokenType::MINUS:
+            checkNumberOperands(expr.oper, left, right);
             return LiteralVariant{ std::get<double>(left) - std::get<double>(right) };
         case TokenType::PLUS:
             if (left.index() == 2 && right.index() == 2) {
@@ -64,10 +79,12 @@ LiteralVariant Interpreter::visitBinaryExpr(Binary& expr) {
             } else if (left.index() == 1 && right.index() == 1) {
                 return LiteralVariant{ std::get<std::string>(left) + std::get<std::string>(right) };
             }
-            break;
+            throw RuntimeError(expr.oper, "Operands must be numbers or strings.");
         case TokenType::SLASH:
+            checkNumberOperands(expr.oper, left, right);
             return LiteralVariant{ std::get<double>(left) / std::get<double>(right) };
         case TokenType::STAR:
+            checkNumberOperands(expr.oper, left, right);
             return LiteralVariant{ std::get<double>(left) * std::get<double>(right) };
     }
     return LiteralVariant{};
@@ -85,11 +102,10 @@ LiteralVariant Interpreter::visitUnaryExpr(Unary& expr) {
     LiteralVariant right = expr.right->accept(*this);
 
     switch (expr.oper.type) {
-        // TODO: error handling for if variant is not correct type
         case TokenType::BANG:
-            // TODO: implement truthiness
             return LiteralVariant{!isTruthy(std::get<bool>(right))};
         case TokenType::MINUS:
+            checkNumberOperand(expr.oper, right);
             return LiteralVariant{-std::get<double>(right)};
     }
     return LiteralVariant{};

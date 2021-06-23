@@ -6,8 +6,6 @@
 
 #include "token.h"
 
-// TODO: Figure out the best way to deal with different return types for visitor pattern functions
-
 class Binary;
 class Grouping;
 class Literal;

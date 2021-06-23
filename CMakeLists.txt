@@ -19,4 +19,5 @@ add_executable(lox_interpreters
         cpplox/parser.cpp
         cpplox/parser.h
         cpplox/interpreter.cpp
-        cpplox/interpreter.h)
+        cpplox/interpreter.h
+        cpplox/runtime_error.h)

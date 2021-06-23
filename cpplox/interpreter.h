@@ -13,6 +13,9 @@ private:
     static bool isTruthy(LiteralVariant literal);
     static bool isEqual(LiteralVariant a, LiteralVariant b);
 
+    static void checkNumberOperand(Token& oper, const LiteralVariant& operand);
+    static void checkNumberOperands(Token& oper, const LiteralVariant& left, const LiteralVariant& right);
+
     LiteralVariant visitBinaryExpr(Binary& expr) override;
     LiteralVariant visitGroupingExpr(Grouping& expr) override;
     LiteralVariant visitLiteralExpr(Literal& expr) override;
